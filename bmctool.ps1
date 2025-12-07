@@ -275,6 +275,10 @@ function Install-RMM {
     }
     catch {
         Write-Error "Failed to download RMM Agent"
+        Write-Host "Error Message: $($_.Exception.Message)"
+        Write-Host "Error Category: $($_.CategoryInfo.Category)"
+        Write-Host "Full Error Details:"
+        $_ | Format-List # Display all properties of the error object
         return
     }    
 
@@ -288,6 +292,10 @@ function Install-RMM {
     }
     catch {
         Write-Error "Failed to install RMM Agent"
+        Write-Host "Error Message: $($_.Exception.Message)"
+        Write-Host "Error Category: $($_.CategoryInfo.Category)"
+        Write-Host "Full Error Details:"
+        $_ | Format-List # Display all properties of the error object
     }
     Pause
 }
