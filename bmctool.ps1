@@ -262,6 +262,36 @@ function Get-SystemInfo {
     }
 }
 
+function Install-RMM {
+    Clear-Host
+
+    Write-Header -Title "Downloading RMM Agent"
+    #Download installer
+    $AgentUrl = "https://rmm.syncromsp.com/dl/rs/djEtMzQ3NTUwMDgtMTc5NjAwODEyMS03MTA3MC00NzAzOTI4"
+    $SavePath = "$BenchmarkComputersPath\SyncroRmmSetup.exe"
+    try {
+        Invoke-WebRequest -Uri $AgentUrl -OutFile $SavePath -PassThru | Out-Null
+        Write-Host "Saved file to $SavePath" -ForegroundColor Green
+    }
+    catch {
+        Write-Error "Failed to download RMM Agent"
+        return
+    }    
+
+    Write-Header -Title "Installing RMM Agent"
+    #Install
+    try {
+        Start-Process $DestinationPath    
+        Write-Host "Successfully installed RMM agent"
+        Write-Host "It will be under the account `"Benchmark RMM`"."
+        Write-Host "Asset Name: $env:COMPUTERNAME"
+    }
+    catch {
+        Write-Error "Failed to install RMM Agent"
+    }
+    Pause
+}
+
 function Repair-WindowsImage {
     $RunTimestamp = [datetime]::Now.ToString("yyyyMMdd-HHmmss")
     Clear-Host
@@ -370,7 +400,8 @@ function Repair-WindowsUpdate {
 $MenuData = [PSCustomObject]@{Id = 1; DisplayName = "Get System Information"; RequireAdmin = $false}, `
             [PSCustomObject]@{Id = 2; DisplayName = "Run DISM and SFC"; RequireAdmin = $true}, `
             [PSCustomObject]@{Id = 3; DisplayName = "Fix Windows Updates"; RequireAdmin = $true}, `
-            [PSCustomObject]@{Id = 4; DisplayName = "Quit"; RequireAdmin = $false}
+            [PSCustomObject]@{Id = 4; DisplayName = "Install RMM Agent"; RequireAdmin = $false}, `
+            [PSCustomObject]@{Id = 99; DisplayName = "Quit"; RequireAdmin = $false}
 $exit = $false
 
 do {
@@ -395,6 +426,7 @@ do {
         1 { Get-SystemInfo }
         2 { Repair-WindowsImage }
         3 { Repair-WindowsUpdate }
-        4 { $exit = $true }
+        4 { Install-RMM }
+        99 { $exit = $true }
     }
 } until ($exit -eq $true)
