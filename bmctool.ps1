@@ -1,3 +1,9 @@
+#Set colors for Windows 10
+$Host.UI.RawUI.BackgroundColor = "Black"
+$Host.UI.RawUI.ForegroundColor = "White"
+clear-host
+
+#Variables
 $BenchmarkComputersPath = "C:\Benchmark Computers"
 $currentPrincipal = New-Object System.Security.Principal.WindowsPrincipal([System.Security.Principal.WindowsIdentity]::GetCurrent())
 $isAdmin = $currentPrincipal.IsInRole([System.Security.Principal.WindowsBuiltInRole]::Administrator)
