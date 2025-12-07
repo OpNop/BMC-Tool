@@ -235,14 +235,19 @@ function Get-SystemInfo {
     if($isWin10) {
         $diskNumber = (Get-Partition -DriveLetter C).DiskNumber
         $partitionStyle = (Get-Disk -Number $diskNumber).PartitionStyle
+        if($isAdmin){
+            $SecureBoot = Confirm-SecureBootUEFI
+        } else {
+            $SecureBoot = "RUN AS ADMIN"
+        }
+
         $supports11 = [PSCustomObject]@{
             PartitionStyle = $partitionStyle
             FirmwareMode = $env:firmware_type
+            SecureBoot = $SecureBoot
         }
         
-        Write-Host "------------------------------------------------------"
-        Write-Host "               Windows 11 Support info                "
-        Write-Host "------------------------------------------------------"
+        Write-Header -Title "Windows 11 Support info"
         $supports11 | Format-List
     }
     Pause
