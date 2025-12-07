@@ -23,7 +23,7 @@ $banner = @("
 ═════════════════════════════════════════════════════════════════════════════
 ")
 
-#Create Benchmark Computers folder
+#Create "Benchmark Computers" folder
 New-item -ItemType Directory -Force -Path $BenchmarkComputersPath | Out-Null
 
 function Show-Menu {
@@ -403,11 +403,45 @@ function Repair-WindowsUpdate {
     Pause
 }
 
+function Install-ActiveBackup {
+    $ABCommand = "winget install --id=Synology.ActiveBackupForBusinessAgent -e --accept-source-agreements --accept-package-agreements"
+
+    #Ask if this is for safetynet or not
+    $options = @(
+        (New-Object System.Management.Automation.Host.ChoiceDescription "$Yes", "This will configure Activebackup to connecto to Scruffy with the safetynet user"),
+        (New-Object System.Management.Automation.Host.ChoiceDescription "$No", "You will be able to manually configure Active Backup after it intalls"),
+        (New-Object System.Management.Automation.Host.ChoiceDescription "$Cancel", "Cancel installing Active Backup")
+    )
+    $safetynet = $Host.UI.PromptForChoice("Install Active Backup Agent", "Do you want to setup for safetynet?", $options, 1)
+
+    switch ($safetynet) {
+        0 { 
+            #Yes
+            $server = "10.0.1.1"
+            $username = $password = "safetynet"
+            $ABCommand += " --override `"ADDRESS=`"$server`" USERNAME=$username PASSWORD=$password ALLOW_UNTRUST=1 /qn`""
+        }
+        1 {
+            #No
+        }
+        2 {
+            #Cancel
+            return
+        }
+        Default {
+            Write-Host "Invalid Choice" -ForegroundColor Red
+        }
+    }
+    Invoke-Command $ABCommand
+    
+}
+
 #Menu options
 $MenuData = [PSCustomObject]@{Id = 1; DisplayName = "Get System Information"; RequireAdmin = $false}, `
             [PSCustomObject]@{Id = 2; DisplayName = "Run DISM and SFC"; RequireAdmin = $true}, `
             [PSCustomObject]@{Id = 3; DisplayName = "Fix Windows Updates"; RequireAdmin = $true}, `
             [PSCustomObject]@{Id = 4; DisplayName = "Install RMM Agent"; RequireAdmin = $false}, `
+            [PSCustomObject]@{Id = 5; DisplayName = "Install Active Backup Agent"; RequireAdmin = $false}, `
             [PSCustomObject]@{Id = 99; DisplayName = "Quit"; RequireAdmin = $false}
 $exit = $false
 
@@ -434,6 +468,7 @@ do {
         2 { Repair-WindowsImage }
         3 { Repair-WindowsUpdate }
         4 { Install-RMM }
+        5 { Install-ActiveBackup }
         99 { $exit = $true }
     }
 } until ($exit -eq $true)
