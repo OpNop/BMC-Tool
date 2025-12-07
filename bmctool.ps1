@@ -419,7 +419,7 @@ function Install-ActiveBackup {
             #Yes
             $server = "10.0.1.1"
             $username = $password = "safetynet"
-            $ABCommand += " --override `"ADDRESS=`"$server`" USERNAME=$username PASSWORD=$password ALLOW_UNTRUST=1 /qn`""
+            $ABCommand += " --override `"ADDRESS=```"$server```" USERNAME=$username PASSWORD=$password ALLOW_UNTRUST=1 /qn`""
         }
         1 {
             #No
