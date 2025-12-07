@@ -149,15 +149,7 @@ function Get-SystemInfo {
     [Ref]$currentTask = 0
     $sleep = 250
 
-    Clear-Host
-    Write-Host " ____  __  __  ____   ___        __       "
-    Write-Host "| __ )|  \/  |/ ___| |_ _|_ __  / _| ___  "
-    Write-Host "|  _ \| |\/| | |      | || '_ \| |_ / _ \ "
-    Write-Host "| |_) | |  | | |___   | || | | |  _| (_) |"
-    Write-Host "|____/|_|  |_|\____| |___|_| |_|_|  \___/ "
-    Write-Host " v1.0 by Don Gordon"
-    Write-Host ""
-    Write-Host ""
+    Write-Header -Title "System Information"
     if(-not $isAdmin) {
     Write-Host "Not running as admin, supported TPM versions will not be checked" -ForegroundColor Red
     $tasks = $tasks - 1
