@@ -253,9 +253,9 @@ function Get-SystemInfo {
     #Ask to save info
     $SaveInfo = $Host.UI.PromptForChoice("Save system inventory", "Do you want to save to file?", @('&Yes', '&No'), 0)
     if($SaveInfo -eq 0){
-        $computerInfo | Format-List | Out-File -FilePath "$BenchmarkComputersPath\SystemInfo.txt"
+        $computerInfo | Format-List | Out-File -FilePath "$BenchmarkComputersPath\SystemInfo-$env:COMPUTERNAME.txt"
         if($isWin10){
-            $supports11 | Format-List | Out-File -Append -FilePath "$BenchmarkComputersPath\Systeminfo.txt"
+            $supports11 | Format-List | Out-File -Append -FilePath "$BenchmarkComputersPath\Systeminfo-$env:COMPUTERNAME.txt"
         }
         Write-Host "Saved to $BenchmarkComputersPath\SystemInfo.txt"
         Pause
