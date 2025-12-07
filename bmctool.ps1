@@ -1,6 +1,17 @@
-#Set colors for Windows 10
-$Host.UI.RawUI.BackgroundColor = "Black"
-$Host.UI.RawUI.ForegroundColor = "White"
+if ($PSVersionTable.PSVersion.Major -lt 7) {
+    #Set colors for Windows 10
+    $Host.UI.RawUI.BackgroundColor = "Black"
+    $Host.UI.RawUI.ForegroundColor = "White"
+
+    #Create $PSStyle
+    $ESC = [char]27
+    $PSStyle = New-Object PSObject
+    $PSStyle | Add-Member -MemberType NoteProperty -Name Blink -Value "$ESC[5m"
+    $PSStyle | Add-Member -MemberType NoteProperty -Name BlinkOff -Value "$ESC[22m"
+    $PSStyle | Add-Member -MemberType NoteProperty -Name Foreground -Value @{}
+    $PSStyle.Foreground | Add-Member -MemberType NoteProperty -Name Red -Value "$ESC[91m"
+    $PSStyle | Add-Member -MemberType NoteProperty -Name Reset -Value "$ESC[0m"
+}
 
 #Variables
 $BenchmarkComputersPath = "C:\Benchmark Computers"
