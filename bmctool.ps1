@@ -368,9 +368,10 @@ function Repair-WindowsUpdate {
 
 #Menu options
 $MenuData = [PSCustomObject]@{Id = 1; DisplayName = "Get System Information"; RequireAdmin = $false}, `
-             [PSCustomObject]@{Id = 2; DisplayName = "Run DISM and SFC"; RequireAdmin = $true}, `
-             [PSCustomObject]@{Id = 3; DisplayName = "Fix Windows Updates"; RequireAdmin = $true}, `
-             [PSCustomObject]@{Id = 4; DisplayName = "Quit"; RequireAdmin = $false}
+            [PSCustomObject]@{Id = 2; DisplayName = "Run DISM and SFC"; RequireAdmin = $true}, `
+            [PSCustomObject]@{Id = 3; DisplayName = "Fix Windows Updates"; RequireAdmin = $true}, `
+            [PSCustomObject]@{Id = 4; DisplayName = "Quit"; RequireAdmin = $false}
+$exit = $false
 
 do {
     Clear-Host
@@ -396,4 +397,4 @@ do {
         3 { Repair-WindowsUpdate }
         4 { $exit = $true }
     }
-} while (-not $exit)
+} until ($exit -eq $true)
