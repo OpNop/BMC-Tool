@@ -90,7 +90,7 @@ function Show-Menu {
                 #Format name if not running as admin
                 $MenuText = $DynamicMenuList[$i].DisplayName
                 if(-not $isAdmin -and $DynamicMenuList[$i].RequireAdmin){
-                    $menuText += " (Admin Required)"
+                    $menuText += " $($PSStyle.Foreground.Red)(Admin Required)$($PSStyle.Reset)"
                 }
 
                 if ($i -eq $SelectedValueIndex) {
