@@ -441,7 +441,7 @@ $MenuData = [PSCustomObject]@{Id = 1; DisplayName = "Get System Information"; Re
             [PSCustomObject]@{Id = 2; DisplayName = "Run DISM and SFC"; RequireAdmin = $true}, `
             [PSCustomObject]@{Id = 3; DisplayName = "Fix Windows Updates"; RequireAdmin = $true}, `
             [PSCustomObject]@{Id = 4; DisplayName = "Install RMM Agent"; RequireAdmin = $false}, `
-            [PSCustomObject]@{Id = 5; DisplayName = "Install Active Backup Agent"; RequireAdmin = $false}, `
+            [PSCustomObject]@{Id = 5; DisplayName = "Install Active Backup Agent"; RequireAdmin = $true}, `
             [PSCustomObject]@{Id = 99; DisplayName = "Quit"; RequireAdmin = $false}
 $exit = $false
 
