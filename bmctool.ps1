@@ -7,13 +7,29 @@ clear-host
 $BenchmarkComputersPath = "C:\Benchmark Computers"
 $currentPrincipal = New-Object System.Security.Principal.WindowsPrincipal([System.Security.Principal.WindowsIdentity]::GetCurrent())
 $isAdmin = $currentPrincipal.IsInRole([System.Security.Principal.WindowsBuiltInRole]::Administrator)
+$banner = @("
+██████╗ ███████╗███╗   ██╗ ██████╗██╗  ██╗███╗   ███╗ █████╗ ██████╗ ██╗  ██╗
+██╔══██╗██╔════╝████╗  ██║██╔════╝██║  ██║████╗ ████║██╔══██╗██╔══██╗██║ ██╔╝
+██████╔╝█████╗  ██╔██╗ ██║██║     ███████║██╔████╔██║███████║██████╔╝█████╔╝
+██╔══██╗██╔══╝  ██║╚██╗██║██║     ██╔══██║██║╚██╔╝██║██╔══██║██╔══██╗██╔═██╗
+██████╔╝███████╗██║ ╚████║╚██████╗██║  ██║██║ ╚═╝ ██║██║  ██║██║  ██║██║  ██╗
+╚═════╝ ╚══════╝╚═╝  ╚═══╝ ╚═════╝╚═╝  ╚═╝╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝
+
+████████╗ ██████╗  ██████╗ ██╗     ███████╗
+╚══██╔══╝██╔═══██╗██╔═══██╗██║     ██╔════╝
+   ██║   ██║   ██║██║   ██║██║     ███████╗       █ █   ▄█   █▀█   █▀█
+   ██║   ██║   ██║██║   ██║██║     ╚════██║       ▀▄▀    █ ▄ █▄█ ▄ █▄█
+   ██║   ╚██████╔╝╚██████╔╝███████╗███████║
+   ╚═╝    ╚═════╝  ╚═════╝ ╚══════╝╚══════╝
+═════════════════════════════════════════════════════════════════════════════
+")
 
 #Create Benchmark Computers folder
 New-item -ItemType Directory -Force -Path $BenchmarkComputersPath | Out-Null
 
 function Show-Menu {
-    Clear-Host
-    Write-Host "==== Benchmark Computers Tools ====" -ForegroundColor DarkCyan
+    Write-Host $banner -ForegroundColor Blue
+    Write-Host ""
     Write-Host "1. System Information" -ForegroundColor DarkCyan
     Write-Host "2. Repair Windows Image" -ForegroundColor DarkCyan
     Write-Host "3. Repair Windows Update" -ForegroundColor DarkCyan
