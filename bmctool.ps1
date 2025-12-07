@@ -281,7 +281,7 @@ function Install-RMM {
     #Install
     try {
         Write-Header -Title "Installing RMM Agent"
-        Start-Process $SavePath
+        Start-Process $SavePath -Wait
         Write-Host "Successfully installed RMM agent"
         Write-Host "It will be under the account `"Benchmark RMM`"."
         Write-Host "Asset Name: $env:COMPUTERNAME"
