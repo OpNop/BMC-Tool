@@ -137,8 +137,7 @@ function Write-Header {
 
 ==================================================
    $Title
-==================================================
-    ")
+==================================================")
     Write-Host $header -ForegroundColor Blue
 }
 
@@ -151,7 +150,7 @@ function Get-SystemInfo {
 
     Write-Header -Title "System Information"
     if(-not $isAdmin) {
-    Write-Host "Not running as admin, supported TPM versions will not be checked" -ForegroundColor Red
+    Write-Host "Not running as admin, supported TPM versions and Secure Boot will not be checked" -ForegroundColor Red
     $tasks = $tasks - 1
     }
 
@@ -238,7 +237,7 @@ function Get-SystemInfo {
         if($isAdmin){
             $SecureBoot = Confirm-SecureBootUEFI
         } else {
-            $SecureBoot = "RUN AS ADMIN"
+            $SecureBoot = "SKIPPED"
         }
 
         $supports11 = [PSCustomObject]@{
@@ -250,7 +249,16 @@ function Get-SystemInfo {
         Write-Header -Title "Windows 11 Support info"
         $supports11 | Format-List
     }
-    Pause
+    
+    #Ask to save info
+    $SaveInfo = $Host.UI.PromptForChoice("Save system inventory", "Do you want to save to file?", @('&Yes', '&No'), 0)
+    if($SaveInfo -eq 0){
+        $computerInfo | Out-File -FilePath "$BenchmarkComputersPath\SystemInfo.txt"
+        if($isWin10){
+            $supports11 | Out-File -Append -FilePath "$BenchmarkComputersPath\Systeminfo.txt"
+        }
+        Write-Host "Saved to $BenchmarkComputersPath\SystemInfo.txt"
+    }
 }
 
 function Repair-WindowsImage {
