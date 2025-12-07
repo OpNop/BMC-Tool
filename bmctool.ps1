@@ -126,6 +126,22 @@ function Show-Menu {
     }
 }
 
+function Write-Header {
+    param (
+        [Parameter(Mandatory=$true)]
+        [string]
+        $Title
+    )
+
+    $header = @("
+
+==================================================
+   $Title
+==================================================
+    ")
+    Write-Host $header -ForegroundColor Blue
+}
+
 function Get-SystemInfo {
     Clear-Host
     # number of tasks for the progress bar
@@ -241,24 +257,30 @@ function Get-SystemInfo {
 }
 
 function Repair-WindowsImage {
+    $RunTimestamp = [datetime]::Now.ToString("yyyyMMdd-HHmmss")
     Clear-Host
     
-    Write-Host "Running Component Clanup" -ForegroundColor Yellow
+    Write-Header -Title "Running Component Clanup"
     DISM /Online /Cleanup-Image /StartComponentCleanup
 
-    Write-Host "Running Restore Health" -ForegroundColor Yellow
+    Write-Header -Title "Running Restore Health"
     DISM /Online /Cleanup-Image /RestoreHealth
 
-    Write-Host "Backing up current CBS.log" -ForegroundColor Yellow
-    Copy-Item -Path "$env:windir\Logs\CBS\CBS.log" -Destination "$BenchmarkComputersPath\CBS.log.copy.$([datetime]::Now.ToString("yyyyMMdd-HHmmss")).log" -Force
+    Write-Header -Title "Backing up current CBS.log"
+    Copy-Item -Path "$env:windir\Logs\CBS\CBS.log" -Destination "$BenchmarkComputersPath\CBS.log.$RunTimestamp.before.log" -Force
+    Write-Host "Wrote $BenchmarkComputersPath\CBS.log.$RunTimestamp.before.log" -ForegroundColor Green
+    Stop-Service TrustedInstaller
     Remove-Item -Path "$env:windir\Logs\CBS\CBS.log" -Force -ErrorAction SilentlyContinue
+    Start-Service TrustedInstaller
 
-    Write-Host "Running System File Checker" -ForegroundColor Yellow
+    Write-Header -Title "Running System File Checker"
     SFC /scannow
 
-    Write-Host "Backing up CBS.log after repairs" -ForegroundColor Yellow
-    Copy-Item -Path "$env:windir\Logs\CBS\CBS.log" -Destination "$BenchmarkComputersPath\CBS.log.after.$([datetime]::Now.ToString("yyyyMMdd-HHmmss")).log" -Force
+    Write-Header -Title "Backing up CBS.log after repairs"
+    Copy-Item -Path "$env:windir\Logs\CBS\CBS.log" -Destination "$BenchmarkComputersPath\CBS.log.$RunTimestamp.after.log" -Force
+    Write-Host "Wrote $BenchmarkComputersPath\CBS.log.$RunTimestamp.after.log" -ForegroundColor Green
     
+    Write-Host ""
     Write-Host "Windows Image repair completed." -ForegroundColor Green
     Pause
 }
