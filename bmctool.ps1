@@ -128,9 +128,8 @@ function Show-Menu {
 
 function Write-Header {
     param (
-        [Parameter(Mandatory=$true)]
-        [string]
-        $Title
+        [Parameter(Mandatory=$true, Position=0)]
+        [string]$Title
     )
 
     $header = @("
@@ -148,7 +147,7 @@ function Get-SystemInfo {
     [Ref]$currentTask = 0
     $sleep = 250
 
-    Write-Header -Title "System Information"
+    Write-Header "System Information"
     if(-not $isAdmin) {
     Write-Host "Not running as admin, supported TPM versions and Secure Boot will not be checked" -ForegroundColor Red
     $tasks = $tasks - 1
@@ -246,7 +245,7 @@ function Get-SystemInfo {
             SecureBoot = $SecureBoot
         }
         
-        Write-Header -Title "Windows 11 Support info"
+        Write-Header "Windows 11 Support info"
         $supports11 | Format-List
     }
     
@@ -269,7 +268,7 @@ function Install-RMM {
 
     #Download installer
     try {
-        Write-Header -Title "Downloading RMM Agent"
+        Write-Header "Downloading RMM Agent"
         Invoke-WebRequest -Uri $AgentUrl -OutFile $SavePath -PassThru | Out-Null
         Write-Host "Saved file to $SavePath" -ForegroundColor Green
     }
@@ -284,7 +283,7 @@ function Install-RMM {
 
     #Install
     try {
-        Write-Header -Title "Installing RMM Agent"
+        Write-Header "Installing RMM Agent"
         Start-Process $SavePath -Wait
         Write-Host "Successfully installed RMM agent"
         Write-Host "It will be under the account `"Benchmark RMM`"."
@@ -304,23 +303,23 @@ function Repair-WindowsImage {
     $RunTimestamp = [datetime]::Now.ToString("yyyyMMdd-HHmmss")
     Clear-Host
     
-    Write-Header -Title "Running Component Clanup"
+    Write-Header "Running Component Clanup"
     DISM /Online /Cleanup-Image /StartComponentCleanup
 
-    Write-Header -Title "Running Restore Health"
+    Write-Header "Running Restore Health"
     DISM /Online /Cleanup-Image /RestoreHealth
 
-    Write-Header -Title "Backing up current CBS.log"
+    Write-Header "Backing up current CBS.log"
     Copy-Item -Path "$env:windir\Logs\CBS\CBS.log" -Destination "$BenchmarkComputersPath\CBS.log.$RunTimestamp.before.log" -Force
     Write-Host "Wrote $BenchmarkComputersPath\CBS.log.$RunTimestamp.before.log" -ForegroundColor Green
     Stop-Service TrustedInstaller
     Remove-Item -Path "$env:windir\Logs\CBS\CBS.log" -Force -ErrorAction SilentlyContinue
     Start-Service TrustedInstaller
 
-    Write-Header -Title "Running System File Checker"
+    Write-Header "Running System File Checker"
     SFC /scannow
 
-    Write-Header -Title "Backing up CBS.log after repairs"
+    Write-Header "Backing up CBS.log after repairs"
     Copy-Item -Path "$env:windir\Logs\CBS\CBS.log" -Destination "$BenchmarkComputersPath\CBS.log.$RunTimestamp.after.log" -Force
     Write-Host "Wrote $BenchmarkComputersPath\CBS.log.$RunTimestamp.after.log" -ForegroundColor Green
     
