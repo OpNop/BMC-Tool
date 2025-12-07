@@ -9,7 +9,7 @@ $currentPrincipal = New-Object System.Security.Principal.WindowsPrincipal([Syste
 $isAdmin = $currentPrincipal.IsInRole([System.Security.Principal.WindowsBuiltInRole]::Administrator)
 
 #Create Benchmark Computers folder
-New-item -ItemType Directory -Force -Path $BenchmarkComputersPath
+New-item -ItemType Directory -Force -Path $BenchmarkComputersPath | Out-Null
 
 function Show-Menu {
     Clear-Host
