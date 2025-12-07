@@ -1,7 +1,6 @@
 #Set colors for Windows 10
 $Host.UI.RawUI.BackgroundColor = "Black"
 $Host.UI.RawUI.ForegroundColor = "White"
-clear-host
 
 #Variables
 $BenchmarkComputersPath = "C:\Benchmark Computers"
@@ -28,12 +27,103 @@ $banner = @("
 New-item -ItemType Directory -Force -Path $BenchmarkComputersPath | Out-Null
 
 function Show-Menu {
-    Write-Host $banner -ForegroundColor Blue
-    Write-Host ""
-    Write-Host "1. System Information" -ForegroundColor DarkCyan
-    Write-Host "2. Repair Windows Image" -ForegroundColor DarkCyan
-    Write-Host "3. Repair Windows Update" -ForegroundColor DarkCyan
-    Write-Host "4. Exit" -ForegroundColor DarkCyan
+    <#
+    .SYNOPSIS
+        Generates a dynamic console menu featuring a list of options, allowing users to 
+        navigate and select choices using their keyboard arrows.
+    .DESCRIPTION
+        The Show-Menu function is used to display a dynamic menu in the console. It takes 
+        a title and a list of options as parameters. The title is optional and defaults to
+        "Please make a selection...". The list of options is mandatory. The function will 
+        display the title in green, followed by the list of options. The user can then make 
+        a selection from the options provided.
+    .EXAMPLE
+        $MenuData += [PSCustomObject]@{Id = 1; DisplayName = "Menu Option 1"; RequireAdmin = $false}, `
+                     [PSCustomObject]@{Id = 2; DisplayName = "Menu Option 2"; RequireAdmin = $true}, `
+                     [PSCustomObject]@{Id = 3; DisplayName = "Menu Option 3"; RequireAdmin = $true}
+        Show-Menu -DynamicMenuTitle "Main Menu" -DynamicMenuList $MenuData
+        This example shows how to use the Show-Menu function to display a menu with a custom title and three options.
+    .NOTES
+        Version: 1.0.0
+        Original Author:  Ryan Dunton https://github.com/ryandunton
+        Author: Don Gordon
+    #>
+    
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory=$false)]
+        [string]
+        $DynamicMenuTitle = "What do you want to do today?",
+        [Parameter(Mandatory=$true)]
+        [array]
+        $DynamicMenuList
+    )
+    
+    begin {
+        # Get longest item for background padding
+        $paddingLength = 42
+
+        if(-not $isAdmin){
+            Write-Host "$($PSStyle.Blink)You are not running as Administrator! Some scripts my not be available.$($PSStyle.BlinkOff)" -ForegroundColor Red
+            Write-Host ""
+        }
+        Write-Host "$DynamicMenuTitle" -ForegroundColor Green
+        Write-Host ""
+        
+        # Create space for the menu
+        $i=0
+        while ($i -lt $DynamicMenuList.Count) {
+            $i++
+            Write-Host ""
+        } 
+    }
+    
+    process {
+        # Set initial selection index
+        $SelectedValueIndex = 0
+        # Display the menu and handle user input
+        do {
+            # Move cursor to top of menu area
+            [Console]::SetCursorPosition(0, [Console]::CursorTop - $DynamicMenuList.Count)
+            for ($i = 0; $i -lt $DynamicMenuList.Count; $i++) {
+
+                #Format name if not running as admin
+                $MenuText = $DynamicMenuList[$i].DisplayName
+                if(-not $isAdmin -and $DynamicMenuList[$i].RequireAdmin){
+                    $menuText += " (Admin Required)"
+                }
+
+                if ($i -eq $SelectedValueIndex) {
+                    Write-Host " → $($MenuText)".PadRight($paddingLength) -NoNewline -BackgroundColor Blue
+                } else {
+                    Write-Host "   $($MenuText)".PadRight($paddingLength) -NoNewline
+                }
+                #Clear any extra characters from previous lines
+                $SpacesToClear = [Math]::Max(0, ($DynamicMenuList[0].Length - $DynamicMenuList[$i].Length))
+                Write-Host (" " * $SpacesToClear) -NoNewline
+                Write-Host ""
+            }
+            # Get user input
+            $KeyInfo = $Host.UI.RawUI.ReadKey('NoEcho, IncludeKeyDown')
+            # Process arrow key input
+            switch ($KeyInfo.VirtualKeyCode) {
+                38 {  # Up arrow
+                    $SelectedValueIndex = [Math]::Max(0, $SelectedValueIndex - 1)
+                }
+                40 {  # Down arrow
+                    $SelectedValueIndex = [Math]::Min($DynamicMenuList.Count - 1, $SelectedValueIndex + 1)
+                }
+            }
+        } while ($KeyInfo.VirtualKeyCode -ne 13)  # Enter key
+        $SelectedValue = $DynamicMenuList[$SelectedValueIndex]
+    }
+    
+    end {
+        return [PSCustomObject]@{
+            Id = $SelectedValue.Id;
+            RequireAdmin = $SelectedValue.RequireAdmin
+        }
+    }
 }
 
 function Get-SystemInfo {
@@ -248,23 +338,34 @@ function Repair-WindowsUpdate {
     Pause
 }
 
-if(-not $isAdmin) {
-    Write-Host "Warning: This script must be running with administrative privileges" -ForegroundColor Red
-    pause
-    exit
-}
+#Menu options
+$MenuData += [PSCustomObject]@{Id = 1; DisplayName = "Get System Information"; RequireAdmin = $false}, `
+             [PSCustomObject]@{Id = 2; DisplayName = "Run DISM and SFC"; RequireAdmin = $true}, `
+             [PSCustomObject]@{Id = 3; DisplayName = "Fix Windows Updates"; RequireAdmin = $true}, `
+             [PSCustomObject]@{Id = 4; DisplayName = "Quit"; RequireAdmin = $false}
 
 do {
-    #Display Menu
-    Show-Menu
-    Write-Host "Please select an option (1-4)" -ForegroundColor DarkGreen
-    $choice = Read-Host 
-    
-    switch ($choice) {
-        "1" { Get-SystemInfo }
-        "2" { Repair-WindowsImage }
-        "3" { Repair-WindowsUpdate }
-        "4" { break}
-        default { Write-Host "Invalid selection. Please try again." ; Pause }
+    Clear-Host
+    Write-Host $banner -ForegroundColor Blue
+
+    $SelectedItem = Show-Menu -DynamicMenuList $MenuData
+
+    #Block admin sctips
+    if(-not $isAdmin -and $SelectedItem.RequireAdmin){
+        Clear-Host
+        Write-Host ""
+        Write-Host ""
+        Write-Host "$($PSStyle.Bold)Script can not be run as a Standard user. Please run as Administrator$($PSStyle.BoldOff)" -ForegroundColor Red
+        Write-Host ""
+        Write-Host ""
+        Pause
+        Continue
     }
-} until ($choice -eq "4")
+
+    switch ($SelectedItem.Id) {
+        1 { Get-SystemInfo }
+        2 { Repair-WindowsImage }
+        3 { Repair-WindowsUpdate }
+        4 { $exit = $true }
+    }
+} while (-not $exit)
