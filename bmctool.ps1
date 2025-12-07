@@ -264,12 +264,12 @@ function Get-SystemInfo {
 
 function Install-RMM {
     Clear-Host
-
-    Write-Header -Title "Downloading RMM Agent"
-    #Download installer
     $AgentUrl = "https://rmm.syncromsp.com/dl/rs/djEtMzQ3NTUwMDgtMTc5NjAwODEyMS03MTA3MC00NzAzOTI4"
     $SavePath = "$BenchmarkComputersPath\SyncroRmmSetup.exe"
+
+    #Download installer
     try {
+        Write-Header -Title "Downloading RMM Agent"
         Invoke-WebRequest -Uri $AgentUrl -OutFile $SavePath -PassThru | Out-Null
         Write-Host "Saved file to $SavePath" -ForegroundColor Green
     }
@@ -278,10 +278,10 @@ function Install-RMM {
         return
     }    
 
-    Write-Header -Title "Installing RMM Agent"
     #Install
     try {
-        Start-Process $DestinationPath    
+        Write-Header -Title "Installing RMM Agent"
+        Start-Process $SavePath
         Write-Host "Successfully installed RMM agent"
         Write-Host "It will be under the account `"Benchmark RMM`"."
         Write-Host "Asset Name: $env:COMPUTERNAME"
