@@ -408,9 +408,9 @@ function Install-ActiveBackup {
 
     #Ask if this is for safetynet or not
     $options = @(
-        (New-Object System.Management.Automation.Host.ChoiceDescription "$Yes", "This will configure Activebackup to connecto to Scruffy with the safetynet user"),
-        (New-Object System.Management.Automation.Host.ChoiceDescription "$No", "You will be able to manually configure Active Backup after it intalls"),
-        (New-Object System.Management.Automation.Host.ChoiceDescription "$Cancel", "Cancel installing Active Backup")
+        [System.Management.Automation.Host.ChoiceDescription]::new("&Yes", "Configure Active Backup to connect to Scruffy with the safetynet user.")
+        [System.Management.Automation.Host.ChoiceDescription]::new("&No", "Manually configure Active Backup after intall.")
+        [System.Management.Automation.Host.ChoiceDescription]::new("&Cancel", "Cancel installing Active Backup.")
     )
     $safetynet = $Host.UI.PromptForChoice("Install Active Backup Agent", "Do you want to setup for safetynet?", $options, 1)
 
