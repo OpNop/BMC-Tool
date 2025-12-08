@@ -314,7 +314,7 @@ function Repair-WindowsImage {
     $RunTimestamp = [datetime]::Now.ToString("yyyyMMdd-HHmmss")
     Clear-Host
     
-    Write-Header "Running Component Clanup"
+    Write-Header "Running Component Cleanup"
     DISM /Online /Cleanup-Image /StartComponentCleanup
 
     Write-Header "Running Restore Health"
