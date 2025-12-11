@@ -443,7 +443,16 @@ function Install-ActiveBackup {
             Write-Host "Invalid Choice" -ForegroundColor Red
         }
     }
-    Invoke-Command $ABCommand
+    
+    try {
+        Invoke-Command $ABCommand
+    } catch {
+        Write-Error "Failed to install Active Backup Agent"
+        Write-Host "Error Message: $($_.Exception.Message)"
+        Write-Host "Error Category: $($_.CategoryInfo.Category)"
+        Write-Host "Full Error Details:"
+        $_ | Format-List # Display all properties of the error object
+    }
     
 }
 
