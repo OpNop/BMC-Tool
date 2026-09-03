@@ -2,9 +2,11 @@
 
 BMC Tools is a collection of PowerShell scrips to help automate common tasks
 
+<img width="554" height="343" alt="image" src="https://github.com/user-attachments/assets/fea50292-4366-45ef-845d-2c380bd6b232" />
+
 ## Usage
 
-in a elevated PowerShell window, run the following command
+In an elevated PowerShell window, run the following command
 ```powershell
 iwr tools.bmcaz.link | iex
 ```
