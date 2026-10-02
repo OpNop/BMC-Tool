@@ -27,8 +27,8 @@ $banner = @("
 
 ████████╗ ██████╗  ██████╗ ██╗     ███████╗
 ╚══██╔══╝██╔═══██╗██╔═══██╗██║     ██╔════╝
-   ██║   ██║   ██║██║   ██║██║     ███████╗       █ █   ▀█   █▀█   █▀█
-   ██║   ██║   ██║██║   ██║██║     ╚════██║       ▀▄▀   █▄ ▄ █▄█ ▄ █▄█
+   ██║   ██║   ██║██║   ██║██║     ███████╗       █ █   ▀█   █▀█   ▄█
+   ██║   ██║   ██║██║   ██║██║     ╚════██║       ▀▄▀   █▄ ▄ █▄█ ▄  █
    ██║   ╚██████╔╝╚██████╔╝███████╗███████║
    ╚═╝    ╚═════╝  ╚═════╝ ╚══════╝╚══════╝
 ═════════════════════════════════════════════════════════════════════════════
@@ -456,12 +456,28 @@ function Install-ActiveBackup {
     
 }
 
+function Get-InstalledPrograms {
+    Clear-Host
+    $RunTimestamp = [datetime]::Now.ToString("MM-dd-yyyy")
+
+    Write-Header "Saving list of installed programs"
+    winget list > "$BenchmarkComputersPath/Installed-Programs-$RunTimestamp.txt"
+
+    Write-Host ""
+    Write-Host "Program list saved to $BenchmarkComputersPath/Installed-Programs-$RunTimestamp.txt" -ForegroundColor Green
+    notepad "$BenchmarkComputersPath/Installed-Programs-$RunTimestamp.txt"
+    Pause
+
+}
+
+
 #Menu options
 $MenuData = [PSCustomObject]@{Id = 1; DisplayName = "Get System Information"; RequireAdmin = $false}, `
             [PSCustomObject]@{Id = 2; DisplayName = "Run DISM and SFC"; RequireAdmin = $true}, `
             [PSCustomObject]@{Id = 3; DisplayName = "Fix Windows Updates"; RequireAdmin = $true}, `
             [PSCustomObject]@{Id = 4; DisplayName = "Install RMM Agent"; RequireAdmin = $false}, `
             [PSCustomObject]@{Id = 5; DisplayName = "Install Active Backup Agent"; RequireAdmin = $true}, `
+            [PSCustomObject]@{id = 6; DisplayName = "Save list of installed programs"; RequireAdmin = $false}, `
             [PSCustomObject]@{Id = 99; DisplayName = "Quit"; RequireAdmin = $false}
 $exit = $false
 
@@ -489,6 +505,7 @@ do {
         3 { Repair-WindowsUpdate }
         4 { Install-RMM }
         5 { Install-ActiveBackup }
+        6 { Get-InstalledPrograms }
         99 { $exit = $true }
     }
 } until ($exit -eq $true)
